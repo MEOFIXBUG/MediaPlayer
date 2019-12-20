@@ -27,7 +27,7 @@ namespace VIPMP3
 
         private void ButtonFechar_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            //Application.Current.Shutdown();
         }
 
         private void Proxima_Click(object sender, RoutedEventArgs e)
