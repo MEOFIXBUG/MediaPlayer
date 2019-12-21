@@ -141,6 +141,11 @@ namespace VIPMP3.ViewModel
         }
         private void ExecutePlayPauseCommand()
         {
+            if (_listPlayingMusics.Count == 0)
+            {
+                ExecuteAddFileCommand();
+                return;
+            }
             if (_isPlaying)
             {
                 _mediaPlayer.Pause();
