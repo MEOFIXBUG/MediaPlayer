@@ -167,11 +167,12 @@
                     </materialDesign:PackIcon>
                 </Button>
 
-                <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="#00000000" BorderBrush="#70702222" HorizontalAlignment="Center">
+                <Button Command="{Binding PlayPauseCommand}" Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="#00000000" BorderBrush="#70702222" HorizontalAlignment="Center"
+                        >
                     <Button.Effect>
                         <DropShadowEffect Color="#FFD67619" RenderingBias="Quality" BlurRadius="40" Direction="0"/>
                     </Button.Effect>
-                    <materialDesign:PackIcon Kind="Pause" VerticalAlignment="Center" Width="30" Height="30">
+                    <materialDesign:PackIcon  Kind="{Binding IconKind, Mode=TwoWay}" VerticalAlignment="Center" Width="30" Height="30">
                         <materialDesign:PackIcon.Foreground>
                             <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                                 <GradientStop Color="#FFD69016"/>
