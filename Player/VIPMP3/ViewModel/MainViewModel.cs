@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -38,6 +39,7 @@ namespace VIPMP3.ViewModel
         #endregion
         #region Data
         private ObservableCollection<Music> _listPlayingMusics;
+        private int _curPlayingIndex = -1;
         #endregion
         #endregion
 
@@ -85,44 +87,54 @@ namespace VIPMP3.ViewModel
             dialog.Filter = "MP3 files (*.mp3)|*.mp3|M4A files (*.m4a)|*.m4a|All files (*.*)|*.*";
             if (dialog.ShowDialog() == true)
             {
-                _mediaPlayer.Open(new Uri(dialog.FileName));
-                StartMusic();
-
-                Music music = new Music();
-                music.Name = dialog.SafeFileName;
-                music.Path = dialog.FileName;
-                music.Cover = null;
-                while (!_mediaPlayer.NaturalDuration.HasTimeSpan)
+                if (_listPlayingMusics.Count == 0)
                 {
-
-                }
-                music.Duration = _mediaPlayer.NaturalDuration.TimeSpan;
-                string len = "";
-                if (music.Duration.Minutes < 10)
+                    ReadMusicData(_mediaPlayer,ref dialog);
+                    StartMusic(_listPlayingMusics[0]);
+                    _curPlayingIndex = 0;
+                } else
                 {
-                    len += $"0{music.Duration.Minutes}";
+                    new Thread(() =>
+                    {
+                        Thread.CurrentThread.IsBackground = true;
+                        /* run your code here */
+                        ReadMusicData(null, ref dialog);
+                        Thread.CurrentThread.Abort();
+                    }).Start();
                 }
-                else
-                {
-                    len += $"{music.Duration.Minutes}";
-                }
-                len += ":";
-                if (music.Duration.Seconds < 10)
-                {
-                    len += $"0{music.Duration.Seconds}";
-                }
-                else
-                {
-                    len += $"{music.Duration.Seconds}";
-                }
-                LengthMusic = len;
-                _listPlayingMusics.Add(music);
 
             }
+            
         }
-        private void StartMusic()
+        private void ReadMusicData(MediaPlayer mediaPlayer2,ref OpenFileDialog dialog)
         {
+            if (mediaPlayer2 == null)
+            {
+                mediaPlayer2 = new MediaPlayer();
+            } 
+            mediaPlayer2.Open(new Uri(dialog.FileName));
+            Music music = new Music();
+            music.Name = dialog.SafeFileName;
+            music.Path = dialog.FileName;
+            music.Cover = null;
+            while (!mediaPlayer2.NaturalDuration.HasTimeSpan)
+            {
+
+            }
+            music.Duration = mediaPlayer2.NaturalDuration.TimeSpan;
+            Dispatcher.CurrentDispatcher.Invoke(() =>
+            {
+                _listPlayingMusics.Add(music);
+                Debug.WriteLine(_listPlayingMusics.Count);
+                OnPropertyChanged();
+            });
+
+        }
+        private void StartMusic(Music music)
+        {
+            _mediaPlayer.Open(new Uri(music.Path));
             _mediaPlayer.Play();
+            LengthMusic = convertLengthToString(music.Duration.Minutes, music.Duration.Seconds); 
             _isPlaying = true;
             IconKind = MaterialDesignThemes.Wpf.PackIconKind.Pause;
             ticks.Interval = TimeSpan.FromMilliseconds(1);
@@ -130,14 +142,38 @@ namespace VIPMP3.ViewModel
             ticks.Start();
             OnPropertyChanged();
         }
+        private string convertLengthToString(int minutes, int seconds)
+        {
+            string len = "";
+            if (minutes < 10)
+            {
+                len += $"0{minutes}";
+            }
+            else
+            {
+                len += $"{minutes}";
+            }
+            len += ":";
+            if (seconds < 10)
+            {
+                len += $"0{seconds}";
+            }
+            else
+            {
+                len += $"{seconds}";
+            }
+            return len;
+        }
         void ticks_Tick(object sender, object e)
         {
+            while(!_mediaPlayer.NaturalDuration.HasTimeSpan) { }
             DurationValue = (int)(_mediaPlayer.Position.TotalMilliseconds / _mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds * 1000);
             string curTime = "";
             if (_mediaPlayer.Position.Minutes < 10)
             {
                 curTime += $"0{_mediaPlayer.Position.Minutes}";
-            } else
+            }
+            else
             {
                 curTime += $"{_mediaPlayer.Position.Minutes}";
             }
@@ -151,7 +187,6 @@ namespace VIPMP3.ViewModel
                 curTime += $"{_mediaPlayer.Position.Seconds}";
             }
             CurPosition = curTime;
-            Debug.WriteLine($"Time: {DurationValue}");
         }
         void changeStatus()
         {
@@ -245,7 +280,7 @@ namespace VIPMP3.ViewModel
         private int _value;
         public int DurationValue
         {
-            get { return _value; } 
+            get { return _value; }
             set
             {
                 _value = value;
@@ -275,6 +310,58 @@ namespace VIPMP3.ViewModel
                 lengthMusic = value;
                 OnPropertyChanged();
             }
+        }
+        #endregion
+        #region NextMusic
+        private ICommand _nextMusic;
+        public ICommand NextMusic
+        {
+            get
+            {
+                return _nextMusic ??
+                    (_nextMusic = new RelayCommand<object>(
+                        (p) => CanExecuteNextMusicCommand(),
+                        (p) => ExecuteNextMusicCommand()));
+            }
+        }
+        private bool CanExecuteNextMusicCommand()
+        {
+            if (_curPlayingIndex < _listPlayingMusics.Count - 1)
+            {
+                return true;
+            } return false;
+        }
+        private void ExecuteNextMusicCommand()
+        {
+            StartMusic(_listPlayingMusics[_curPlayingIndex + 1]);
+            _curPlayingIndex += 1;
+        }
+        #endregion
+
+        #region PreviousMusic
+        private ICommand _previousMusic;
+        public ICommand PreviousMusic
+        {
+            get
+            {
+                return _previousMusic ??
+                    (_previousMusic = new RelayCommand<object>(
+                        (p) => CanExecutePreviousMusicCommand(),
+                        (p) => ExecutePreviousMusicCommand()));
+            }
+        }
+        private bool CanExecutePreviousMusicCommand()
+        {
+            if (_curPlayingIndex > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+        private void ExecutePreviousMusicCommand()
+        {
+            StartMusic(_listPlayingMusics[_curPlayingIndex - 1]);
+            _curPlayingIndex -= 1;
         }
         #endregion
         #endregion
