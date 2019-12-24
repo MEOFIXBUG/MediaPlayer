@@ -24,7 +24,7 @@ namespace VIPMP3.ViewModel
         bool _isPlaying = false;
         bool _isStopped = false;
         public delegate void timerTick();
-        DispatcherTimer ticks = new DispatcherTimer();
+        public DispatcherTimer ticks = new DispatcherTimer();
         timerTick tick;
         #endregion
         #region Play_PauseButton
@@ -39,7 +39,7 @@ namespace VIPMP3.ViewModel
         private PackIconKind _IconKind = PackIconKind.Play;
         #endregion
         #region Data
-        private ObservableCollection<Music> _listPlayingMusics;
+        private ObservableCollection<Music> _listPlayingMusics { get; set; }
         private List<int> RecentPlayed;
         private int _curPlayingIndex = -1;
         #endregion
@@ -218,10 +218,12 @@ namespace VIPMP3.ViewModel
 
             }
             music.Duration = mediaPlayer2.NaturalDuration.TimeSpan;
-            Dispatcher.CurrentDispatcher.Invoke(() =>
+            music.DurationInString = convertLengthToString(music.Duration.Minutes, music.Duration.Seconds);
+            Application.Current.Dispatcher.Invoke(() =>
             {
                 _listPlayingMusics.Add(music);
                 RecentPlayed.Add(RecentPlayed.Count);
+                Musics = _listPlayingMusics;
                 Debug.WriteLine(_listPlayingMusics.Count);
                 OnPropertyChanged();
             });
@@ -239,6 +241,7 @@ namespace VIPMP3.ViewModel
             NameMusic = music.Name;
             _isPlaying = true;
             IconKind = MaterialDesignThemes.Wpf.PackIconKind.Pause;
+
             ticks.Interval = TimeSpan.FromMilliseconds(1);
             ticks.Tick += ticks_Tick;
             ticks.Start();
@@ -576,6 +579,43 @@ namespace VIPMP3.ViewModel
             isShuffle = !isShuffle;
             ShuffleKind = isShuffle ? PackIconKind.Shuffle : PackIconKind.ShuffleDisabled;
             OnPropertyChanged();
+        }
+        #endregion
+        #region DurationChangeBySlider
+        private ICommand _durationChange;
+        public ICommand DurationChange
+        {
+            get
+            {
+                return _durationChange ??
+                    (_durationChange = new RelayCommand<object>(
+                        (p) => CanExecuteDurationChange(),
+                        (p) => ExecuteDurationChange(p)));
+            }
+        }
+        private bool CanExecuteDurationChange() { return true; }
+        private void ExecuteDurationChange(object p)
+        {
+
+
+        }
+        #endregion
+        #region ListPlaying
+        private ObservableCollection<Music> _musics = new ObservableCollection<Music>();
+        public ObservableCollection<Music> Musics
+        {
+            get
+            {
+                return _musics;
+            }
+            set
+            {
+                if (_musics != value)
+                {
+                    _musics = value;
+                    OnPropertyChanged();
+                }
+            }
         }
         #endregion
         #endregion

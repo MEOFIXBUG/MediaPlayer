@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using VIPMP3.ViewModel;
 
 namespace VIPMP3
 {
@@ -40,9 +41,12 @@ namespace VIPMP3
 
         }
 
-        private void DurationSlider_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
 
+
+        private void DurationSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var viewModel = (MainViewModel)this.DataContext;
+            viewModel.DurationChange.Execute(sender);
         }
     }
 }

@@ -7,11 +7,13 @@ using System.Windows;
 
 namespace VIPMP3.Model
 {
-    class Music
+    public class Music
     {
         public string Name { get; set; }
         public string Path { get; set; }
         public string Cover { get; set; }
         public TimeSpan Duration { get; set; }
+
+        public string DurationInString { get; set; }
     }   
 }
