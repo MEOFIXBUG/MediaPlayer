@@ -40,6 +40,7 @@ namespace VIPMP3.ViewModel
         #endregion
         #region Data
         private ObservableCollection<Music> _listPlayingMusics;
+        private List<int> RecentPlayed;
         private int _curPlayingIndex = -1;
         #endregion
         #region State
@@ -47,6 +48,7 @@ namespace VIPMP3.ViewModel
         private const int REPEAT = 1;
         private const int REPEAT_ONE = 2;
         private int mode = 0;
+        private bool isShuffle = false;
         #endregion
         #endregion
 
@@ -59,25 +61,75 @@ namespace VIPMP3.ViewModel
             _mediaPlayer.MediaEnded += _mediaPlayer_MediaEnded;
             IconKind = MaterialDesignThemes.Wpf.PackIconKind.Play;
             _listPlayingMusics = new ObservableCollection<Music>();
+            RecentPlayed = new List<int>();
         }
+        //Kiem tra da choi ngau nhien tat ca bai hat
+        private bool CheckAllPlayed()
+        {
+            if (RecentPlayed.Count == 0) return true;
+            return false;
+        }
+        private void SummonAgain()
+        {
+            for (int i = 0; i < _listPlayingMusics.Count; i++)
+            {
+                RecentPlayed.Add(i);
+            }
+        }
+        private void CheckMusicPlayed(int index)
+        {
+            RecentPlayed.RemoveAt(index);
+        }
+        private void PlayAShuffle()
+        {
 
+            var r = new Random();
+            int i;
+            if (CheckAllPlayed() == true)
+            {
+                SummonAgain();
+            }
+            do
+            {
+                i = r.Next(0, RecentPlayed.Count - 1);
+            } while (RecentPlayed[i] == _curPlayingIndex);
+            StartMusic(_listPlayingMusics[RecentPlayed[i]], RecentPlayed[i]);
+            CheckMusicPlayed(i);
+
+        }
         private void _mediaPlayer_MediaEnded(object sender, EventArgs e)
         {
             switch (mode)
             {
                 case REPEAT:
+                    if (isShuffle && _listPlayingMusics.Count > 2)
+                    {
+                        PlayAShuffle();
+                        return;
+                    }
                     if (_curPlayingIndex == _listPlayingMusics.Count - 1)
                     {
-                        StartMusic(_listPlayingMusics[0]);
-                        _curPlayingIndex = 0;
+                        StartMusic(_listPlayingMusics[0], 0);
                     }
                     else
                     {
-                        StartMusic(_listPlayingMusics[_curPlayingIndex + 1]);
-                        _curPlayingIndex += 1;
+                        StartMusic(_listPlayingMusics[_curPlayingIndex + 1], _curPlayingIndex + 1);
                     }
                     break;
                 case REPEAT_OFF:
+                    if (isShuffle && _listPlayingMusics.Count > 2)
+                    {
+                        if (CheckAllPlayed() == true)
+                        {
+                            _isStopped = true;
+                            _isPlaying = false;
+                            _curPlayingIndex = 0;
+                            IconKind = PackIconKind.Play;
+                            return;
+                        } else
+                        PlayAShuffle();
+                        return;
+                    }
                     if (_curPlayingIndex == _listPlayingMusics.Count - 1)
                     {
                         _curPlayingIndex = 0;
@@ -87,12 +139,12 @@ namespace VIPMP3.ViewModel
                     }
                     else
                     {
-                        StartMusic(_listPlayingMusics[_curPlayingIndex + 1]);
-                        _curPlayingIndex += 1;
+                        StartMusic(_listPlayingMusics[_curPlayingIndex + 1], _curPlayingIndex + 1);
                     }
                     break;
                 case REPEAT_ONE:
-                    StartMusic(_listPlayingMusics[_curPlayingIndex]);
+
+                    StartMusic(_listPlayingMusics[_curPlayingIndex], _curPlayingIndex);
                     break;
             }
         }
@@ -134,8 +186,7 @@ namespace VIPMP3.ViewModel
                 if (_listPlayingMusics.Count == 0)
                 {
                     ReadMusicData(_mediaPlayer, ref dialog);
-                    StartMusic(_listPlayingMusics[0]);
-                    _curPlayingIndex = 0;
+                    StartMusic(_listPlayingMusics[0], 0);
                 }
                 else
                 {
@@ -170,14 +221,16 @@ namespace VIPMP3.ViewModel
             Dispatcher.CurrentDispatcher.Invoke(() =>
             {
                 _listPlayingMusics.Add(music);
+                RecentPlayed.Add(RecentPlayed.Count);
                 Debug.WriteLine(_listPlayingMusics.Count);
                 OnPropertyChanged();
             });
 
         }
-        private void StartMusic(Music music)
+        private void StartMusic(Music music, int index)
         {
             _mediaPlayer.Open(new Uri(music.Path));
+            _curPlayingIndex = index;
             var duration = music.Duration;
             var testDuration = new TimeSpan(duration.Hours, duration.Minutes, duration.Seconds - 10);
             _mediaPlayer.Position = testDuration;
@@ -320,10 +373,11 @@ namespace VIPMP3.ViewModel
                 IconKind = MaterialDesignThemes.Wpf.PackIconKind.Pause;
                 if (_isStopped)
                 {
-                    StartMusic(_listPlayingMusics[_curPlayingIndex]);
+                    StartMusic(_listPlayingMusics[_curPlayingIndex], _curPlayingIndex);
                     _isStopped = false;
-                } else 
-                _mediaPlayer.Play();
+                }
+                else
+                    _mediaPlayer.Play();
             }
             _isPlaying = !_isPlaying;
             OnPropertyChanged();
@@ -400,15 +454,18 @@ namespace VIPMP3.ViewModel
         }
         private void ExecuteNextMusicCommand()
         {
+            if (isShuffle && _listPlayingMusics.Count > 2)
+            {
+                PlayAShuffle();
+                return;
+            }
             if (_curPlayingIndex == _listPlayingMusics.Count - 1)
             {
-                StartMusic(_listPlayingMusics[0]);
-                _curPlayingIndex = 0;
+                StartMusic(_listPlayingMusics[0], 0);
             }
             else
             {
-                StartMusic(_listPlayingMusics[_curPlayingIndex + 1]);
-                _curPlayingIndex += 1;
+                StartMusic(_listPlayingMusics[_curPlayingIndex + 1], _curPlayingIndex + 1);
             }
         }
         #endregion
@@ -435,8 +492,7 @@ namespace VIPMP3.ViewModel
         }
         private void ExecutePreviousMusicCommand()
         {
-            StartMusic(_listPlayingMusics[_curPlayingIndex - 1]);
-            _curPlayingIndex -= 1;
+            StartMusic(_listPlayingMusics[_curPlayingIndex - 1], _curPlayingIndex - 1);
         }
         #endregion
         #region ChangeModePlay
@@ -485,6 +541,41 @@ namespace VIPMP3.ViewModel
                 _modeKind = value;
                 OnPropertyChanged();
             }
+        }
+        #endregion
+        #region ShuffleKind
+        private PackIconKind _shuffleKind = MaterialDesignThemes.Wpf.PackIconKind.ShuffleDisabled;
+        public PackIconKind ShuffleKind
+        {
+            get { return _shuffleKind; }
+            set
+            {
+                _shuffleKind = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+        #region ShuffleMode
+        private ICommand _shuffleMode;
+        public ICommand ShuffleMode
+        {
+            get
+            {
+                return _shuffleMode ??
+                    (_shuffleMode = new RelayCommand<object>(
+                        (p) => CanExecuteShuffleMode(),
+                        (p) => ExecuteShuffleMode()));
+            }
+        }
+        private bool CanExecuteShuffleMode()
+        {
+            return true;
+        }
+        public void ExecuteShuffleMode()
+        {
+            isShuffle = !isShuffle;
+            ShuffleKind = isShuffle ? PackIconKind.Shuffle : PackIconKind.ShuffleDisabled;
+            OnPropertyChanged();
         }
         #endregion
         #endregion
