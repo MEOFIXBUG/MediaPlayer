@@ -126,10 +126,9 @@
                         </materialDesign:PackIcon.Foreground>
                     </materialDesign:PackIcon>
                 </Button>
-                <TextBlock Text="Tocando Agora" Margin="5" HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding NameMusic}" Margin="5" HorizontalAlignment="Center" />
             </Grid>
 
-            <TextBlock Text="Witt Lowry - Around Your Heart" Margin="25" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <Grid VerticalAlignment="Top" Margin="0,50">
                 <Ellipse Width="150" Height="150" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Ellipse.Stroke>

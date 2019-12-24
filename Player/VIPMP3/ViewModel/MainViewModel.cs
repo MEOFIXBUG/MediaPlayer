@@ -134,7 +134,8 @@ namespace VIPMP3.ViewModel
         {
             _mediaPlayer.Open(new Uri(music.Path));
             _mediaPlayer.Play();
-            LengthMusic = convertLengthToString(music.Duration.Minutes, music.Duration.Seconds); 
+            LengthMusic = convertLengthToString(music.Duration.Minutes, music.Duration.Seconds);
+            NameMusic = music.Name;
             _isPlaying = true;
             IconKind = MaterialDesignThemes.Wpf.PackIconKind.Pause;
             ticks.Interval = TimeSpan.FromMilliseconds(1);
@@ -301,7 +302,7 @@ namespace VIPMP3.ViewModel
         }
         #endregion
         #region LengthMusic
-        private string lengthMusic;
+        private string lengthMusic = "00:00";
         public string LengthMusic
         {
             get { return lengthMusic; }
@@ -309,6 +310,22 @@ namespace VIPMP3.ViewModel
             {
                 lengthMusic = value;
                 OnPropertyChanged();
+            }
+        }
+        #endregion
+        #region NameMusic
+        private string nameMusic = "Please Choose Musics";
+        public string NameMusic
+        {
+            get
+            {
+                return nameMusic;
+            }
+            set
+            {
+                nameMusic = value;
+                OnPropertyChanged();
+
             }
         }
         #endregion
