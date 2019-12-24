@@ -39,5 +39,10 @@ namespace VIPMP3
         {
 
         }
+
+        private void DurationSlider_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

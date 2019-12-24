@@ -22,6 +22,7 @@ namespace VIPMP3.ViewModel
         #region MediaPlayer
         MediaPlayer _mediaPlayer;
         bool _isPlaying = false;
+        bool _isStopped = false;
         public delegate void timerTick();
         DispatcherTimer ticks = new DispatcherTimer();
         timerTick tick;
@@ -41,6 +42,12 @@ namespace VIPMP3.ViewModel
         private ObservableCollection<Music> _listPlayingMusics;
         private int _curPlayingIndex = -1;
         #endregion
+        #region State
+        private const int REPEAT_OFF = 0;
+        private const int REPEAT = 1;
+        private const int REPEAT_ONE = 2;
+        private int mode = 0;
+        #endregion
         #endregion
 
         #region Contructor
@@ -49,8 +56,45 @@ namespace VIPMP3.ViewModel
             //initial
             //init media player
             _mediaPlayer = new MediaPlayer();
+            _mediaPlayer.MediaEnded += _mediaPlayer_MediaEnded;
             IconKind = MaterialDesignThemes.Wpf.PackIconKind.Play;
             _listPlayingMusics = new ObservableCollection<Music>();
+        }
+
+        private void _mediaPlayer_MediaEnded(object sender, EventArgs e)
+        {
+            switch (mode)
+            {
+                case REPEAT:
+                    if (_curPlayingIndex == _listPlayingMusics.Count - 1)
+                    {
+                        StartMusic(_listPlayingMusics[0]);
+                        _curPlayingIndex = 0;
+                    }
+                    else
+                    {
+                        StartMusic(_listPlayingMusics[_curPlayingIndex + 1]);
+                        _curPlayingIndex += 1;
+                    }
+                    break;
+                case REPEAT_OFF:
+                    if (_curPlayingIndex == _listPlayingMusics.Count - 1)
+                    {
+                        _curPlayingIndex = 0;
+                        _isPlaying = false;
+                        _isStopped = true;
+                        IconKind = PackIconKind.Play;
+                    }
+                    else
+                    {
+                        StartMusic(_listPlayingMusics[_curPlayingIndex + 1]);
+                        _curPlayingIndex += 1;
+                    }
+                    break;
+                case REPEAT_ONE:
+                    StartMusic(_listPlayingMusics[_curPlayingIndex]);
+                    break;
+            }
         }
         #endregion
 
@@ -89,10 +133,11 @@ namespace VIPMP3.ViewModel
             {
                 if (_listPlayingMusics.Count == 0)
                 {
-                    ReadMusicData(_mediaPlayer,ref dialog);
+                    ReadMusicData(_mediaPlayer, ref dialog);
                     StartMusic(_listPlayingMusics[0]);
                     _curPlayingIndex = 0;
-                } else
+                }
+                else
                 {
                     new Thread(() =>
                     {
@@ -104,14 +149,14 @@ namespace VIPMP3.ViewModel
                 }
 
             }
-            
+
         }
-        private void ReadMusicData(MediaPlayer mediaPlayer2,ref OpenFileDialog dialog)
+        private void ReadMusicData(MediaPlayer mediaPlayer2, ref OpenFileDialog dialog)
         {
             if (mediaPlayer2 == null)
             {
                 mediaPlayer2 = new MediaPlayer();
-            } 
+            }
             mediaPlayer2.Open(new Uri(dialog.FileName));
             Music music = new Music();
             music.Name = dialog.SafeFileName;
@@ -133,6 +178,9 @@ namespace VIPMP3.ViewModel
         private void StartMusic(Music music)
         {
             _mediaPlayer.Open(new Uri(music.Path));
+            var duration = music.Duration;
+            var testDuration = new TimeSpan(duration.Hours, duration.Minutes, duration.Seconds - 10);
+            _mediaPlayer.Position = testDuration;
             _mediaPlayer.Play();
             LengthMusic = convertLengthToString(music.Duration.Minutes, music.Duration.Seconds);
             NameMusic = music.Name;
@@ -167,7 +215,7 @@ namespace VIPMP3.ViewModel
         }
         void ticks_Tick(object sender, object e)
         {
-            while(!_mediaPlayer.NaturalDuration.HasTimeSpan) { }
+            while (!_mediaPlayer.NaturalDuration.HasTimeSpan) { }
             DurationValue = (int)(_mediaPlayer.Position.TotalMilliseconds / _mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds * 1000);
             string curTime = "";
             if (_mediaPlayer.Position.Minutes < 10)
@@ -269,8 +317,13 @@ namespace VIPMP3.ViewModel
             }
             else
             {
-                _mediaPlayer.Play();
                 IconKind = MaterialDesignThemes.Wpf.PackIconKind.Pause;
+                if (_isStopped)
+                {
+                    StartMusic(_listPlayingMusics[_curPlayingIndex]);
+                    _isStopped = false;
+                } else 
+                _mediaPlayer.Play();
             }
             _isPlaying = !_isPlaying;
             OnPropertyChanged();
@@ -343,15 +396,20 @@ namespace VIPMP3.ViewModel
         }
         private bool CanExecuteNextMusicCommand()
         {
-            if (_curPlayingIndex < _listPlayingMusics.Count - 1)
-            {
-                return true;
-            } return false;
+            return true;
         }
         private void ExecuteNextMusicCommand()
         {
-            StartMusic(_listPlayingMusics[_curPlayingIndex + 1]);
-            _curPlayingIndex += 1;
+            if (_curPlayingIndex == _listPlayingMusics.Count - 1)
+            {
+                StartMusic(_listPlayingMusics[0]);
+                _curPlayingIndex = 0;
+            }
+            else
+            {
+                StartMusic(_listPlayingMusics[_curPlayingIndex + 1]);
+                _curPlayingIndex += 1;
+            }
         }
         #endregion
 
@@ -379,6 +437,54 @@ namespace VIPMP3.ViewModel
         {
             StartMusic(_listPlayingMusics[_curPlayingIndex - 1]);
             _curPlayingIndex -= 1;
+        }
+        #endregion
+        #region ChangeModePlay
+        private ICommand _changeModePlay;
+        public ICommand ChangeModePlay
+        {
+            get
+            {
+                return _changeModePlay ??
+                    (_changeModePlay = new RelayCommand<object>(
+                        (p) => CanExecuteChangeModePlay(),
+                        (p) => ExecuteChangeModePlay()));
+            }
+        }
+        private bool CanExecuteChangeModePlay()
+        {
+            return true;
+        }
+        public void ExecuteChangeModePlay()
+        {
+            mode = (mode + 1) % 3;
+            if (mode == REPEAT_OFF) //Khong repeat
+            {
+                ModeKind = PackIconKind.RepeatOff;
+            }
+            else
+            if (mode == REPEAT) //Khong repeat
+            {
+                ModeKind = PackIconKind.Repeat;
+            }
+            else
+            if (mode == REPEAT_ONE) //Khong repeat
+            {
+                ModeKind = PackIconKind.RepeatOne;
+            }
+            OnPropertyChanged();
+        }
+        #endregion
+        #region ModeKind
+        private PackIconKind _modeKind = MaterialDesignThemes.Wpf.PackIconKind.RepeatOff;
+        public PackIconKind ModeKind
+        {
+            get { return _modeKind; }
+            set
+            {
+                _modeKind = value;
+                OnPropertyChanged();
+            }
         }
         #endregion
         #endregion

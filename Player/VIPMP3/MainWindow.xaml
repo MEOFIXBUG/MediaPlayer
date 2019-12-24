@@ -162,7 +162,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Slider Name="DurationSlider" Grid.Column="0" Orientation="Horizontal" Minimum="1" Maximum="1000" Value="{Binding DurationValue}" Margin="10, 0, 10, 0"/>
+                    <Slider Name="DurationSlider" Grid.Column="0" Orientation="Horizontal" Minimum="1" Maximum="1000" IsMoveToPointEnabled="True"  Value="{Binding DurationValue, Mode=TwoWay, Delay=500}" IsEnabled="True" Margin="10, 0, 10, 0"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                             <TextBlock Text="{Binding CurPosition}" HorizontalAlignment="Right"/>
                             <TextBlock Text="/" HorizontalAlignment="Right"/>
@@ -178,8 +178,8 @@
                         <ColumnDefinition Width="523*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left">
-                        <materialDesign:PackIcon Kind="RotateRight" VerticalAlignment="Center" Width="30" Height="30">
+                    <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Command="{Binding ChangeModePlay}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left">
+                        <materialDesign:PackIcon Kind="{Binding ModeKind}"  VerticalAlignment="Center" Width="30" Height="30">
                             <materialDesign:PackIcon.Foreground>
                                 <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                                     <GradientStop Color="#FFD69016"/>
