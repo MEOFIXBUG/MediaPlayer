@@ -161,7 +161,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Slider Name="DurationSlider" Grid.Column="0"  Orientation="Horizontal" Minimum="1" Maximum="1000" IsMoveToPointEnabled="True"  Value="{Binding DurationValue, Mode=TwoWay, Delay=500}" IsEnabled="True" Margin="10, 0, 10, 0"/>
+                    <Slider Name="DurationSlider" ValueChanged="DurationSlider_ValueChanged" Grid.Column="0"  Orientation="Horizontal" Minimum="1" Maximum="1000" IsMoveToPointEnabled="True"  Value="{Binding DurationValue, Mode=TwoWay, Delay=500}" IsEnabled="True" Margin="10, 0, 10, 0" IsSnapToTickEnabled="True" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                         <TextBlock Text="{Binding CurPosition}" HorizontalAlignment="Right"/>
                         <TextBlock Text="/" HorizontalAlignment="Right"/>

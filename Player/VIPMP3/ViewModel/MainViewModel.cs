@@ -21,6 +21,7 @@ namespace VIPMP3.ViewModel
         //code
         #region MediaPlayer
         MediaPlayer _mediaPlayer;
+        bool _isDragging = false;
         bool _isPlaying = false;
         bool _isStopped = false;
         public delegate void timerTick();
@@ -126,8 +127,9 @@ namespace VIPMP3.ViewModel
                             _curPlayingIndex = 0;
                             IconKind = PackIconKind.Play;
                             return;
-                        } else
-                        PlayAShuffle();
+                        }
+                        else
+                            PlayAShuffle();
                         return;
                     }
                     if (_curPlayingIndex == _listPlayingMusics.Count - 1)
@@ -596,8 +598,13 @@ namespace VIPMP3.ViewModel
         private bool CanExecuteDurationChange() { return true; }
         private void ExecuteDurationChange(object p)
         {
+            if (_mediaPlayer.NaturalDuration.HasTimeSpan)
+            {
+                int seekPos = int.Parse(string.Format("{0}", p));
+                _mediaPlayer.Position = TimeSpan.FromMilliseconds((double)seekPos*
+                    _mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds/ 1000);
 
-
+            }
         }
         #endregion
         #region ListPlaying

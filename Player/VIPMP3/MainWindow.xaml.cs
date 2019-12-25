@@ -45,8 +45,9 @@ namespace VIPMP3
 
         private void DurationSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            Slider slider = sender as Slider;
             var viewModel = (MainViewModel)this.DataContext;
-            viewModel.DurationChange.Execute(sender);
+            viewModel.DurationChange.Execute(slider.Value);
         }
     }
 }
