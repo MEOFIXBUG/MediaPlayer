@@ -598,13 +598,15 @@ namespace VIPMP3.ViewModel
         private bool CanExecuteDurationChange() { return true; }
         private void ExecuteDurationChange(object p)
         {
-            if (_mediaPlayer.NaturalDuration.HasTimeSpan)
+            ticks.Stop();
+            if (_mediaPlayer.NaturalDuration.HasTimeSpan && Global.isDragging == true)
             {
                 int seekPos = int.Parse(string.Format("{0}", p));
                 _mediaPlayer.Position = TimeSpan.FromMilliseconds((double)seekPos*
                     _mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds/ 1000);
-
+                Debug.WriteLine(seekPos);
             }
+            ticks.Start();
         }
         #endregion
         #region ListPlaying

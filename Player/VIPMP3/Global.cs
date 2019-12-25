@@ -7,7 +7,8 @@ using System.Windows.Threading;
 
 namespace VIPMP3
 {
-    class Global
+    public class Global
     {
+        public static bool isDragging = false;
     }
 }

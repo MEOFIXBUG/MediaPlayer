@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,6 +49,22 @@ namespace VIPMP3
             Slider slider = sender as Slider;
             var viewModel = (MainViewModel)this.DataContext;
             viewModel.DurationChange.Execute(slider.Value);
+        }
+
+
+
+
+
+        private void DurationSlider_MouseDown(object sender, MouseEventArgs e)
+        {
+            Debug.WriteLine("Dragging");
+            Global.isDragging = true;
+        }
+
+        private void DurationSlider_MouseUp(object sender, MouseEventArgs e)
+        {
+            Debug.WriteLine("StopDrag");
+            Global.isDragging = false;
         }
     }
 }
