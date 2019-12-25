@@ -23,7 +23,7 @@ namespace VIPMP3.ViewModel
         MediaPlayer _mediaPlayer;
         bool _isDragging = false;
         bool _isPlaying = false;
-        bool _isStopped = false;
+        bool _isStopped = true;
         public delegate void timerTick();
         public DispatcherTimer ticks = new DispatcherTimer();
         timerTick tick;
@@ -235,9 +235,6 @@ namespace VIPMP3.ViewModel
         {
             _mediaPlayer.Open(new Uri(music.Path));
             _curPlayingIndex = index;
-            var duration = music.Duration;
-            var testDuration = new TimeSpan(duration.Hours, duration.Minutes, duration.Seconds - 10);
-            _mediaPlayer.Position = testDuration;
             _mediaPlayer.Play();
             LengthMusic = convertLengthToString(music.Duration.Minutes, music.Duration.Seconds);
             NameMusic = music.Name;
@@ -388,7 +385,33 @@ namespace VIPMP3.ViewModel
             OnPropertyChanged();
         }
         #endregion
+        #region StopCommand
+        private ICommand _stopCommand;
+        public ICommand StopCommand
+        {
+            get
+            {
+                return _stopCommand ??
+                    (_stopCommand = new RelayCommand<object>(
+                        (p) => CanExecuteStopCommand(),
+                        (p) => ExecuteStopCommand()));
+            }
+        }
 
+        private bool CanExecuteStopCommand()
+        {
+            return true;
+        }
+        private void ExecuteStopCommand()
+        {
+            _isStopped = true;
+            _isPlaying = false;
+            IconKind = PackIconKind.Play;
+            _mediaPlayer.Position = TimeSpan.Zero;
+            _mediaPlayer.Stop();
+            OnPropertyChanged();
+        }
+        #endregion
         #region UpdateDuration
         private int _value;
         public int DurationValue
