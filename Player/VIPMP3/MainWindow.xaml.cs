@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using VIPMP3.ViewModel;
+
 
 namespace VIPMP3
 {
@@ -34,7 +25,7 @@ namespace VIPMP3
 
         private void Proxima_Click(object sender, RoutedEventArgs e)
         {
-            
+
         }
 
         private void Anterior_Click(object sender, RoutedEventArgs e)
@@ -46,9 +37,28 @@ namespace VIPMP3
 
         private void DurationSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Slider slider = sender as Slider;
+            var slider = sender as Slider;
             var viewModel = (MainViewModel)this.DataContext;
-            viewModel.DurationChange.Execute(slider.Value);
+            var time = TimeSpan.FromMilliseconds( slider.Value / 1000 * viewModel.MediaPlayerNaturalDuration);
+            string curTime = "";
+            if (time.Minutes < 10)
+            {
+                curTime += $"0{time.Minutes}";
+            }
+            else
+            {
+                curTime += $"{time.Minutes}";
+            }
+            curTime += ":";
+            if (time.Seconds < 10)
+            {
+                curTime += $"0{time.Seconds}";
+            }
+            else
+            {
+                curTime += $"{time.Seconds}";
+            }
+            viewModel.CurPosition = curTime;
         }
 
 
@@ -59,12 +69,21 @@ namespace VIPMP3
         {
             Debug.WriteLine("Dragging");
             Global.isDragging = true;
+            var viewModel = (MainViewModel)this.DataContext;
+            viewModel.ticks.Stop();
+
         }
 
         private void DurationSlider_MouseUp(object sender, MouseEventArgs e)
         {
             Debug.WriteLine("StopDrag");
+
+            Slider slider = sender as Slider;
+            var viewModel = (MainViewModel)this.DataContext;
+            viewModel.DurationChange.Execute(slider.Value);
+            viewModel.ticks.Start();
             Global.isDragging = false;
+
         }
     }
 }

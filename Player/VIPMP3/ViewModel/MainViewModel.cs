@@ -21,6 +21,13 @@ namespace VIPMP3.ViewModel
         //code
         #region MediaPlayer
         MediaPlayer _mediaPlayer;
+        /// <summary>
+        /// return duration as milisecond
+        /// </summary>
+        public double MediaPlayerNaturalDuration
+        {
+            get { return _mediaPlayer.NaturalDuration.HasTimeSpan ? _mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds : 0; }
+        }
         bool _isDragging = false;
         bool _isPlaying = false;
         bool _isStopped = true;
@@ -153,6 +160,28 @@ namespace VIPMP3.ViewModel
         #endregion
 
         #region Command
+        #region
+
+        private ICommand _selectedMusicChangedCommand;
+        public ICommand SelectedMusicChangedCommand
+        {
+            get
+            {
+                return _selectedMusicChangedCommand ??
+                     (_selectedMusicChangedCommand = new RelayCommand<object>(
+                         (p) =>
+                         {
+                             return true;
+                         },
+                         (p) =>
+                         {
+                            
+                             MessageBox.Show("Help me to play the song at index " + p.ToString());
+                         }));
+
+            }
+        }
+        #endregion
         #region AddFileMP3Command
         private ICommand _addFileMP3Command;
         public ICommand AddFileMP3Command
@@ -182,6 +211,7 @@ namespace VIPMP3.ViewModel
 
             //}
             OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Multiselect = true;
             dialog.Filter = "MP3 files (*.mp3)|*.mp3|M4A files (*.m4a)|*.m4a|All files (*.*)|*.*";
             if (dialog.ShowDialog() == true)
             {
@@ -210,25 +240,29 @@ namespace VIPMP3.ViewModel
             {
                 mediaPlayer2 = new MediaPlayer();
             }
-            mediaPlayer2.Open(new Uri(dialog.FileName));
-            Music music = new Music();
-            music.Name = dialog.SafeFileName;
-            music.Path = dialog.FileName;
-            music.Cover = null;
-            while (!mediaPlayer2.NaturalDuration.HasTimeSpan)
-            {
 
-            }
-            music.Duration = mediaPlayer2.NaturalDuration.TimeSpan;
-            music.DurationInString = convertLengthToString(music.Duration.Minutes, music.Duration.Seconds);
-            Application.Current.Dispatcher.Invoke(() =>
+            for (int i = 0; i < dialog.FileNames.Length; i++)
             {
-                _listPlayingMusics.Add(music);
-                RecentPlayed.Add(RecentPlayed.Count);
-                Musics = _listPlayingMusics;
-                Debug.WriteLine(_listPlayingMusics.Count);
-                OnPropertyChanged();
-            });
+                mediaPlayer2.Open(new Uri(dialog.FileNames[i]));
+                Music music = new Music();
+                music.Name = dialog.SafeFileNames[i];
+                music.Path = dialog.FileNames[i];
+                music.Cover = null;
+                while (!mediaPlayer2.NaturalDuration.HasTimeSpan)
+                {
+
+                }
+                music.Duration = mediaPlayer2.NaturalDuration.TimeSpan;
+                music.DurationInString = convertLengthToString(music.Duration.Minutes, music.Duration.Seconds);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    _listPlayingMusics.Add(music);
+                    RecentPlayed.Add(RecentPlayed.Count);
+                    Musics = _listPlayingMusics;
+                    Debug.WriteLine(_listPlayingMusics.Count);
+                    OnPropertyChanged();
+                });
+            }
 
         }
         private void StartMusic(Music music, int index)
@@ -356,7 +390,7 @@ namespace VIPMP3.ViewModel
 
         private bool CanExecutePlayPauseCommand()
         {
-            return true;
+            return _listPlayingMusics.Count != 0;
         }
         private void ExecutePlayPauseCommand()
         {
@@ -400,7 +434,7 @@ namespace VIPMP3.ViewModel
 
         private bool CanExecuteStopCommand()
         {
-            return true;
+            return _isPlaying != false;
         }
         private void ExecuteStopCommand()
         {
@@ -409,6 +443,7 @@ namespace VIPMP3.ViewModel
             IconKind = PackIconKind.Play;
             _mediaPlayer.Position = TimeSpan.Zero;
             _mediaPlayer.Stop();
+            DurationValue = 0;
             OnPropertyChanged();
         }
         #endregion
@@ -621,15 +656,15 @@ namespace VIPMP3.ViewModel
         private bool CanExecuteDurationChange() { return true; }
         private void ExecuteDurationChange(object p)
         {
-            ticks.Stop();
+            //ticks.Stop();
             if (_mediaPlayer.NaturalDuration.HasTimeSpan && Global.isDragging == true)
             {
                 int seekPos = int.Parse(string.Format("{0}", p));
-                _mediaPlayer.Position = TimeSpan.FromMilliseconds((double)seekPos*
-                    _mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds/ 1000);
+                _mediaPlayer.Position = TimeSpan.FromMilliseconds((double)seekPos *
+                    _mediaPlayer.NaturalDuration.TimeSpan.TotalMilliseconds / 1000);
                 Debug.WriteLine(seekPos);
             }
-            ticks.Start();
+            //ticks.Start();
         }
         #endregion
         #region ListPlaying

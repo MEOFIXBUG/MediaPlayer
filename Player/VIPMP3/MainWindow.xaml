@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:VIPMP3"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
@@ -88,12 +89,16 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid Background="Black" Margin="0,3,0,-3">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7*"/>
+            <ColumnDefinition Width="68*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="6.5*" />
             <RowDefinition Height="0.5*" />
             <RowDefinition Height="3.4*" />
         </Grid.RowDefinitions>
-        <Grid Background="#44444444" Margin="1,1,1,1" Height="300" VerticalAlignment="Top">
+        <Grid Background="#44444444" Margin="1,1,1,0" Height="300" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <Grid VerticalAlignment="Top">
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                     <Button x:Name="ButtonMinimize" Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}"  Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="20" Height="20" Margin="10,0" Command="{Binding MinimizeCommand }">
@@ -163,15 +168,22 @@
             <StackPanel VerticalAlignment="Bottom">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="50"/>
                     </Grid.ColumnDefinitions>
-                    <Slider Name="DurationSlider" ValueChanged="DurationSlider_ValueChanged" GotMouseCapture="DurationSlider_MouseDown" LostMouseCapture="DurationSlider_MouseUp" Grid.Column="0"  Orientation="Horizontal" Minimum="1" Maximum="1000" IsMoveToPointEnabled="True"  Value="{Binding DurationValue, Mode=TwoWay}" IsEnabled="True" Margin="10, 0, 10, 0" IsSnapToTickEnabled="True" />
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <TextBlock Text="{Binding CurPosition}" HorizontalAlignment="Right"/>
-                        <TextBlock Text="/" HorizontalAlignment="Right"/>
-                        <TextBlock Text="{Binding LengthMusic}" HorizontalAlignment="Right"/>
-                    </StackPanel>
+
+                    <TextBlock Grid.Column="0" Text="{Binding CurPosition}" HorizontalAlignment="Center"/>
+                    <Slider Name="DurationSlider" Grid.Column="1"  
+                            
+                            ValueChanged="DurationSlider_ValueChanged" 
+                            GotMouseCapture="DurationSlider_MouseDown" 
+                            LostMouseCapture="DurationSlider_MouseUp"
+                            Orientation="Horizontal" Minimum="1" Maximum="1000" 
+                            IsMoveToPointEnabled="True"  
+                            Value="{Binding DurationValue, Mode=TwoWay}" IsEnabled="True" Margin="10, 0, 10, 0" 
+                            IsSnapToTickEnabled="True" />
+                    <TextBlock Grid.Column="2" Text="{Binding LengthMusic}" HorizontalAlignment="Center"/>
 
 
                 </Grid>
@@ -265,8 +277,9 @@
                 </Grid>
             </StackPanel>
         </Grid>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="20" Height="20" Margin="10,0" Command="{Binding AddFileMP3Command}">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0,0.2,0,163" Grid.RowSpan="2">
+            <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="20" Height="20" Margin="10,0" 
+                    Command="{Binding AddFileMP3Command}">
                 <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Width="20" Height="20">
                     <materialDesign:PackIcon.Foreground>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
@@ -278,7 +291,8 @@
                 </materialDesign:PackIcon>
             </Button>
             <TextBlock Text="New PlayList" Margin="4" HorizontalAlignment="Center" />
-            <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="20" Height="20" Margin="10,0" Command="{Binding AddFileMP3Command}">
+            <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="20" Height="20" Margin="10,0" 
+                    Command="{Binding AddFileMP3Command}">
                 <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Width="20" Height="20">
                     <materialDesign:PackIcon.Foreground>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
@@ -294,12 +308,21 @@
 
 
 
-        <Grid  Grid.Row="2" Background="#44444444" Margin="10,0,10,10" Height="300" VerticalAlignment="Top">
-            <ListView  VerticalAlignment="Bottom" Height="150" Margin="5" Foreground="LightSteelBlue" ItemsSource="{Binding Musics}">
+        <Grid  Grid.Row="2" Background="#44444444" Margin="10,0.2,10,-2" Height="165" VerticalAlignment="Top" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="47*"/>
+            </Grid.ColumnDefinitions>
+            <ListView Name="musicsListView"  VerticalAlignment="Bottom" Height="152" Margin="5,0,5,3" Foreground="LightSteelBlue" ItemsSource="{Binding Musics}" Grid.ColumnSpan="2">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding SelectedMusicChangedCommand}" CommandParameter="{Binding ElementName=musicsListView,Path=SelectedIndex}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ListViewItem>
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" IsHitTestVisible="False">
                                 <Ellipse Width="30" Height="30">
                                     <Ellipse.Fill>
                                         <ImageBrush ImageSource="/Assets/photo.jpg"/>
