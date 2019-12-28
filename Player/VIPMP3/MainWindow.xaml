@@ -279,7 +279,7 @@
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0,0.2,0,163" Grid.RowSpan="2">
             <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="20" Height="20" Margin="10,0" 
-                    Command="{Binding AddFileMP3Command}">
+                    Command="{Binding CreatePlayListCommand}">
                 <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Width="20" Height="20">
                     <materialDesign:PackIcon.Foreground>
                         <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
@@ -291,29 +291,17 @@
                 </materialDesign:PackIcon>
             </Button>
             <TextBlock Text="New PlayList" Margin="4" HorizontalAlignment="Center" />
-            <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="20" Height="20" Margin="10,0" 
-                    Command="{Binding AddFileMP3Command}">
-                <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Width="20" Height="20">
-                    <materialDesign:PackIcon.Foreground>
-                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                            <GradientStop Color="#FFD69016"/>
-                            <GradientStop Color="#FFD6511E" Offset="0.747"/>
-                            <GradientStop Color="#FF9B330D" Offset="0.807"/>
-                        </LinearGradientBrush>
-                    </materialDesign:PackIcon.Foreground>
-                </materialDesign:PackIcon>
-            </Button>
-            <TextBlock Text="New Song" Margin="4" HorizontalAlignment="Center" />
         </StackPanel>
 
 
 
         <Grid  Grid.Row="2" Background="#44444444" Margin="10,0.2,10,-2" Height="165" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="8*"/>
-                <ColumnDefinition Width="47*"/>
+                <ColumnDefinition Width="64*"/>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="351*"/>
             </Grid.ColumnDefinitions>
-            <ListView Name="musicsListView"  VerticalAlignment="Bottom" Height="152" Margin="5,0,5,3" Foreground="LightSteelBlue" ItemsSource="{Binding Musics}" Grid.ColumnSpan="2">
+            <ListView Name="musicsListView"  VerticalAlignment="Bottom" Height="152" Margin="5,0,5,3" Foreground="LightSteelBlue" ItemsSource="{Binding Musics}" Grid.ColumnSpan="3">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding SelectedMusicChangedCommand}" CommandParameter="{Binding ElementName=musicsListView,Path=SelectedIndex}"/>

@@ -685,6 +685,29 @@ namespace VIPMP3.ViewModel
             }
         }
         #endregion
+        #region CreatePlayListCommand
+        private ICommand _createPlayListCommand;
+        public ICommand CreatePlayListCommand
+        {
+            get
+            {
+                return _createPlayListCommand ??
+                     (_createPlayListCommand = new RelayCommand<object>(
+                         (p) => CanExecuteCreatePlayListCommand(),
+                            (p) => ExecuteCreatePlayListCommand()));
+            }
+        }
+        private bool CanExecuteCreatePlayListCommand()
+        {
+            return true;
+        }
+
+        private void ExecuteCreatePlayListCommand()
+        {
+            CreatePlayList createPlayList = new CreatePlayList();
+            createPlayList.ShowDialog();
+        }
+        #endregion
         #endregion
     }
 }
