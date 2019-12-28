@@ -17,6 +17,7 @@ namespace VIPMP3.ViewModel
 {
     public class PlayListViewModel : BaseViewModel
     {
+
         #region Contructor
 
         public PlayListViewModel()
@@ -29,6 +30,9 @@ namespace VIPMP3.ViewModel
         }
         #endregion
         #region Propertise
+
+        public event EventHandler RefreshPlayListList;
+
         #region NamePlaylist
         private string _namePlayList;
         public string NamePlayList
@@ -215,6 +219,9 @@ namespace VIPMP3.ViewModel
         {
             Common.WriteToXmlFile<ObservableCollection<Music>>(NamePlayList+".txt", Musics);
             MessageBox.Show("Lưu Thành Công");
+
+            RefreshPlayListList?.Invoke(this, null);
+            //update mainWindow.
         }
         #endregion
     }

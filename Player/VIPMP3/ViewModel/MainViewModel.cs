@@ -767,8 +767,29 @@ namespace VIPMP3.ViewModel
         private void ExecuteCreatePlayListCommand()
         {
             CreatePlayList createPlayList = new CreatePlayList();
+            var playListVM = createPlayList.DataContext as PlayListViewModel;
+            playListVM.RefreshPlayListList += PlayListVM_RefreshPlayListList;
             createPlayList.ShowDialog();
         }
+
+        private void PlayListVM_RefreshPlayListList(object sender, EventArgs e)
+        {
+            string path =
+                    AppDomain.CurrentDomain.BaseDirectory;
+            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+            FileInfo[] Files = d.GetFiles("*.txt"); //Getting Text files
+            PlayListCollection = new ObservableCollection<PlayList>();
+            PlayListCollection.Clear();
+            foreach (FileInfo file in Files)
+            {
+                var temp = new PlayList();
+                temp.Name = Path.GetFileNameWithoutExtension(file.Name);
+                temp.musicList = Common.ReadFromXmlFile<List<Music>>(file.FullName);
+                PlayListCollection.Add(temp);
+            }
+        }
+
+      
         #endregion
         #region PlaylistSelectionChangedCommand
         private ICommand _playlistSelectionChangedCommand;
