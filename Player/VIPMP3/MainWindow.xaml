@@ -11,6 +11,7 @@
         Title="MainWindow" Height="500" Width="900" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" Foreground="LightSteelBlue">
     <Window.Resources>
         <ResourceDictionary>
+            
             <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -86,6 +87,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+            
         </ResourceDictionary>
     </Window.Resources>
     <Grid Background="Black" Margin="0,3,0,-3">
@@ -278,7 +280,7 @@
             </StackPanel>
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" Grid.ColumnSpan="2" Margin="0,0.2,0,163" Grid.RowSpan="2">
-            <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="20" Height="20" Margin="10,0" 
+            <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="20" Height="20" Margin="10,0,0,0" 
                     Command="{Binding CreatePlayListCommand}">
                 <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Width="20" Height="20">
                     <materialDesign:PackIcon.Foreground>
@@ -290,10 +292,18 @@
                     </materialDesign:PackIcon.Foreground>
                 </materialDesign:PackIcon>
             </Button>
-            <TextBlock Text="New PlayList" Margin="4" HorizontalAlignment="Center" />
+            <TextBlock Text="New PlayList" Margin="4,1,0,0" HorizontalAlignment="Center" />
+            <ComboBox Width="125" x:Name="PlayListComboBox"    
+                                  Background="WhiteSmoke"
+                                   Foreground="Black"
+                                  SelectedValue="{Binding SelectedPlayList}"
+                                  DisplayMemberPath="Name"
+                                  ItemsSource="{Binding PlayListCollection}" 
+                                   Margin="60,0,0,0" 
+                                 VerticalAlignment="Center">
+
+            </ComboBox>
         </StackPanel>
-
-
 
         <Grid  Grid.Row="2" Background="#44444444" Margin="10,0.2,10,-2" Height="165" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>

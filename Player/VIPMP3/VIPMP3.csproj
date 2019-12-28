@@ -80,6 +80,8 @@
     </Compile>
     <Compile Include="Global.cs" />
     <Compile Include="Model\Music.cs" />
+    <Compile Include="Model\PlayList.cs" />
+    <Compile Include="Ultils\Common.cs" />
     <Compile Include="ViewModel\BaseViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\PlayListViewModel.cs" />

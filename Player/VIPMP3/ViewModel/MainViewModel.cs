@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
@@ -12,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using VIPMP3.Model;
+using VIPMP3.Ultils;
 
 namespace VIPMP3.ViewModel
 {
@@ -19,6 +21,30 @@ namespace VIPMP3.ViewModel
     {
         #region Properties
         //code
+        #region PlayList
+        private ObservableCollection<PlayList> _playListCollection;
+        public ObservableCollection<PlayList> PlayListCollection
+        {
+            get => _playListCollection;
+            set
+            {
+                _playListCollection = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+        #region S_operation
+        private PlayList _selectedPlayList;
+        public PlayList SelectedPlayList
+        {
+            get => _selectedPlayList;
+            set
+            {
+                _selectedPlayList = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
         #region MediaPlayer
         MediaPlayer _mediaPlayer;
         /// <summary>
@@ -65,6 +91,20 @@ namespace VIPMP3.ViewModel
         {
             //initial
             //init media player
+            string path =
+                  AppDomain.CurrentDomain.BaseDirectory;
+            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+            FileInfo[] Files = d.GetFiles("*.txt"); //Getting Text files
+            PlayListCollection = new ObservableCollection<PlayList>();
+            PlayListCollection.Clear();
+            foreach (FileInfo file in Files)
+            {
+                var temp = new PlayList();
+                temp.Name = Path.GetFileNameWithoutExtension(file.Name);
+                temp.musicList=Common.ReadFromXmlFile<List<Music>>(file.FullName);
+                PlayListCollection.Add(temp);
+            }
+            SelectedPlayList = PlayListCollection[0];
             _mediaPlayer = new MediaPlayer();
             _mediaPlayer.MediaEnded += _mediaPlayer_MediaEnded;
             IconKind = MaterialDesignThemes.Wpf.PackIconKind.Play;
