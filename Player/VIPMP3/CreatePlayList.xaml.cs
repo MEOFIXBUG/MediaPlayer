@@ -24,7 +24,7 @@ namespace VIPMP3
             InitializeComponent();
         }
 
-       
+
         private void BtnClose_Click(object sender, RoutedEventArgs e)
         {
             Close();

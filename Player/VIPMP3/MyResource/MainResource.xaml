@@ -3,4 +3,5 @@
                     xmlns:local="clr-namespace:VIPMP3.MyResource"
                     xmlns:viewmodel="clr-namespace:VIPMP3.ViewModel">
     <viewmodel:MainViewModel x:Key="MainVM"></viewmodel:MainViewModel>
+    <viewmodel:PlayListViewModel x:Key="PlayListVM"></viewmodel:PlayListViewModel>
 </ResourceDictionary>
