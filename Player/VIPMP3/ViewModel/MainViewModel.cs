@@ -17,7 +17,7 @@ using VIPMP3.Ultils;
 
 namespace VIPMP3.ViewModel
 {
-    public class MainViewModel : BaseViewModel
+    public partial class MainViewModel : BaseViewModel
     {
         #region Properties
         //code
@@ -76,6 +76,25 @@ namespace VIPMP3.ViewModel
         private ObservableCollection<Music> _listPlayingMusics { get; set; }
         private List<int> RecentPlayed;
         private int _curPlayingIndex = -1;
+        public int PlayingIndex
+        {
+            get => _curPlayingIndex;
+            set
+            {
+                _curPlayingIndex = value;
+                OnPropertyChanged();
+            }
+        }
+        private Music _playingMusic;
+        public Music PlayingMusic
+        {
+            get => _playingMusic;
+            set
+            {
+                _playingMusic = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
         #region State
         private const int REPEAT_OFF = 0;
@@ -104,12 +123,15 @@ namespace VIPMP3.ViewModel
                 temp.musicList=Common.ReadFromXmlFile<List<Music>>(file.FullName);
                 PlayListCollection.Add(temp);
             }
-            SelectedPlayList = PlayListCollection[0];
+            //SelectedPlayList = PlayListCollection[0];
             _mediaPlayer = new MediaPlayer();
             _mediaPlayer.MediaEnded += _mediaPlayer_MediaEnded;
             IconKind = MaterialDesignThemes.Wpf.PackIconKind.Play;
             _listPlayingMusics = new ObservableCollection<Music>();
             RecentPlayed = new List<int>();
+
+            //register key hook
+            registerKeyHook();
         }
         //Kiem tra da choi ngau nhien tat ca bai hat
         private bool CheckAllPlayed()
@@ -215,8 +237,7 @@ namespace VIPMP3.ViewModel
                          },
                          (p) =>
                          {
-                            
-                             MessageBox.Show("Help me to play the song at index " + p.ToString());
+                             StartMusic(_listPlayingMusics[(int)p], (int)p);
                          }));
 
             }
@@ -309,6 +330,7 @@ namespace VIPMP3.ViewModel
         {
             _mediaPlayer.Open(new Uri(music.Path));
             _curPlayingIndex = index;
+            PlayingMusic = _listPlayingMusics[index];
             _mediaPlayer.Play();
             LengthMusic = convertLengthToString(music.Duration.Minutes, music.Duration.Seconds);
             NameMusic = music.Name;
@@ -746,6 +768,28 @@ namespace VIPMP3.ViewModel
         {
             CreatePlayList createPlayList = new CreatePlayList();
             createPlayList.ShowDialog();
+        }
+        #endregion
+        #region PlaylistSelectionChangedCommand
+        private ICommand _playlistSelectionChangedCommand;
+        public ICommand PlaylistSelectionChangedCommand
+        {
+            get
+            {
+                return _playlistSelectionChangedCommand ??
+                     (_playlistSelectionChangedCommand = new RelayCommand<object>(
+                         (p) => { return true; },
+                            (p) =>
+                            {
+                                //read file
+                                ObservableCollection<Music> musics = new ObservableCollection<Music>();
+                                string path = AppDomain.CurrentDomain.BaseDirectory + "/" + PlayListCollection[(int)p].Name + ".txt";
+
+                                Musics = Common.ReadFromXmlFile<ObservableCollection<Music>>(path);
+                                _listPlayingMusics = Musics;
+
+                            }));
+            }
         }
         #endregion
         #endregion

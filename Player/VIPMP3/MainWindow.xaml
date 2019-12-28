@@ -11,7 +11,7 @@
         Title="MainWindow" Height="500" Width="900" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" Foreground="LightSteelBlue">
     <Window.Resources>
         <ResourceDictionary>
-            
+
             <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -87,7 +87,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            
+
         </ResourceDictionary>
     </Window.Resources>
     <Grid Background="Black" Margin="0,3,0,-3">
@@ -301,17 +301,25 @@
                                   ItemsSource="{Binding PlayListCollection}" 
                                    Margin="60,0,0,0" 
                                  VerticalAlignment="Center">
-
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding PlaylistSelectionChangedCommand}" CommandParameter="{Binding ElementName=PlayListComboBox,Path=SelectedIndex}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
             </ComboBox>
         </StackPanel>
 
-        <Grid  Grid.Row="2" Background="#44444444" Margin="10,0.2,10,-2" Height="165" VerticalAlignment="Top" Grid.ColumnSpan="2">
+        <Grid  Grid.Row="2" Background="#44444444" Margin="8,20.2,12,-22" Height="165" VerticalAlignment="Top" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="64*"/>
-                <ColumnDefinition Width="25*"/>
-                <ColumnDefinition Width="351*"/>
+                <ColumnDefinition Width="128*"/>
+                <ColumnDefinition Width="50*"/>
+                <ColumnDefinition Width="16*"/>
+                <ColumnDefinition Width="29*"/>
+                <ColumnDefinition Width="657*"/>
             </Grid.ColumnDefinitions>
-            <ListView Name="musicsListView"  VerticalAlignment="Bottom" Height="152" Margin="5,0,5,3" Foreground="LightSteelBlue" ItemsSource="{Binding Musics}" Grid.ColumnSpan="3">
+            <ListView Name="musicsListView"  VerticalAlignment="Bottom" Height="152" Margin="5,0,5,3" Foreground="LightSteelBlue"  Grid.ColumnSpan="5"
+                      ItemsSource="{Binding Musics}" SelectedItem="{Binding PlayingMusic}"
+                      SelectedIndex="{Binding PlayingIndex, Mode=TwoWay}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding SelectedMusicChangedCommand}" CommandParameter="{Binding ElementName=musicsListView,Path=SelectedIndex}"/>
