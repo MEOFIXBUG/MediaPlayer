@@ -471,7 +471,7 @@ namespace VIPMP3.ViewModel
                 IconKind = MaterialDesignThemes.Wpf.PackIconKind.Pause;
                 if (_isStopped)
                 {
-                    StartMusic(_listPlayingMusics[_curPlayingIndex], _curPlayingIndex);
+                    StartMusic(_listPlayingMusics[0], 0);
                     _isStopped = false;
                 }
                 else
