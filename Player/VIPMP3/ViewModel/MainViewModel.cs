@@ -238,7 +238,7 @@ namespace VIPMP3.ViewModel
                          (p) =>
                          {
                              if ((int)p < 0) p = 0;
-                             StartMusic(_listPlayingMusics[(int)p], (ip);
+                             StartMusic(_listPlayingMusics[(int)p], (int)p);
                          }));
 
             }
