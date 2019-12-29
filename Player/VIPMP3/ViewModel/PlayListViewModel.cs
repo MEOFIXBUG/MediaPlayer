@@ -25,7 +25,6 @@ namespace VIPMP3.ViewModel
             //initial
             //init media player
             _mediaPlayer = new MediaPlayer();
-            _listPlayingMusics = new ObservableCollection<Music>();
            
         }
         #endregion
@@ -82,28 +81,7 @@ namespace VIPMP3.ViewModel
        
         #endregion
         #endregion
-        //#region CloseCommand
-        //private ICommand _closeCommand;
-        //public ICommand CloseCommand
-        //{
-        //    get
-        //    {
-        //        return _closeCommand ??
-        //             (_closeCommand = new RelayCommand<object>(
-        //                 (p) => CanExecuteCloseCommand(),
-        //                    (p) => ExecuteCloseCommand()));
-        //    }
-        //}
-        //private bool CanExecuteCloseCommand()
-        //{
-        //    return true;
-        //}
-
-        //private void ExecuteCloseCommand()
-        //{
-        //    Application.Current.Shutdown();
-        //}
-        //#endregion
+       
         #region AddFileMP3Command
         private ICommand _addFileMP3Command;
         public ICommand AddFileMP3Command
@@ -186,9 +164,7 @@ namespace VIPMP3.ViewModel
                 music.DurationInString = convertLengthToString(music.Duration.Minutes, music.Duration.Seconds);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _listPlayingMusics.Add(music);
-                    Musics = _listPlayingMusics;
-                    Debug.WriteLine(_listPlayingMusics.Count);
+                    Musics.Add(music);
                     OnPropertyChanged();
                 });
             }

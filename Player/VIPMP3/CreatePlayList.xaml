@@ -112,7 +112,7 @@
         <Grid Grid.Row="1" >
             <StackPanel Orientation="Horizontal"  >
                 <TextBlock Text="PlayList Name :" Margin="20,0,20,26" Height="25" VerticalAlignment="Bottom" />
-                <TextBox  Text="{Binding Path= NamePlayList, Mode=TwoWay ,UpdateSourceTrigger=PropertyChanged}" Margin="0,33,0,26" BorderBrush="Blue" Width="218"/>
+                <TextBox Name="PlayListName" Text="{Binding Path= NamePlayList, Mode=TwoWay ,UpdateSourceTrigger=PropertyChanged}" Margin="0,33,0,26" BorderBrush="Blue" Width="218"/>
             </StackPanel>
             <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="31,69,0,-20" 
                     Command="{Binding AddFileMP3Command}" RenderTransformOrigin="0.7,-5.123">
@@ -133,7 +133,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <ListView Name="musicsListView"  Margin="15,25,15,15" Foreground="LightSteelBlue" ItemsSource="{Binding Musics}" Background="#44444444" >
+            <ListView Name="musicsListView"  Margin="15,25,15,15" Foreground="LightSteelBlue" ItemsSource="{Binding Musics ,Mode=TwoWay}" Background="#44444444" >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding SelectedMusicChangedCommand}" CommandParameter="{Binding ElementName=musicsListView,Path=SelectedIndex}"/>
@@ -143,6 +143,7 @@
                     <DataTemplate>
                         <ListViewItem>
                             <StackPanel Orientation="Horizontal" IsHitTestVisible="False">
+                                
                                 <Ellipse Width="30" Height="30">
                                     <Ellipse.Fill>
                                         <ImageBrush ImageSource="/Assets/photo.jpg"/>

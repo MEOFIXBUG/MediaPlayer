@@ -307,6 +307,18 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ComboBox>
+            <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="20" Height="20" Margin="10,0,0,0" 
+                    Command="{Binding UpdatePlayListCommand}">
+                <materialDesign:PackIcon Kind="Arrow" VerticalAlignment="Center" Width="20" Height="20">
+                    <materialDesign:PackIcon.Foreground>
+                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                            <GradientStop Color="#FFD69016"/>
+                            <GradientStop Color="#FFD6511E" Offset="0.747"/>
+                            <GradientStop Color="#FF9B330D" Offset="0.807"/>
+                        </LinearGradientBrush>
+                    </materialDesign:PackIcon.Foreground>
+                </materialDesign:PackIcon>
+            </Button>
         </StackPanel>
 
         <Grid  Grid.Row="2" Background="#44444444" Margin="8,20.2,12,-22" Height="165" VerticalAlignment="Top" Grid.ColumnSpan="2">

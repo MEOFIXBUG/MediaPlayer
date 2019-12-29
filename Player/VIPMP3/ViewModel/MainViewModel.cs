@@ -766,7 +766,7 @@ namespace VIPMP3.ViewModel
 
         private void ExecuteCreatePlayListCommand()
         {
-            CreatePlayList createPlayList = new CreatePlayList();
+            CreatePlayList createPlayList = new CreatePlayList(null);
             var playListVM = createPlayList.DataContext as PlayListViewModel;
             playListVM.RefreshPlayListList += PlayListVM_RefreshPlayListList;
             createPlayList.ShowDialog();
@@ -811,6 +811,33 @@ namespace VIPMP3.ViewModel
 
                             }));
             }
+        }
+        #endregion
+        #region UpdatePlayList
+        private ICommand _updatePlayListCommand;
+        public ICommand UpdatePlayListCommand
+        {
+            get
+            {
+                return _updatePlayListCommand ??
+                     (_updatePlayListCommand = new RelayCommand<object>(
+                         (p) => CanExecuteUpdatePlayListCommand(),
+                            (p) => ExecuteUpdatePlayListCommand()));
+            }
+        }
+        private bool CanExecuteUpdatePlayListCommand()
+        {
+            if (SelectedPlayList != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void ExecuteUpdatePlayListCommand()
+        {
+            CreatePlayList createPlayList = new CreatePlayList(SelectedPlayList);
+            createPlayList.ShowDialog();
         }
         #endregion
         #endregion
