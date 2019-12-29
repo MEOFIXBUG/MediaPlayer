@@ -799,7 +799,7 @@ namespace VIPMP3.ViewModel
             {
                 return _playlistSelectionChangedCommand ??
                      (_playlistSelectionChangedCommand = new RelayCommand<object>(
-                         (p) => { return true; },
+                         (p) => { return (int)p >= 0; },
                             (p) =>
                             {
                                 //read file
