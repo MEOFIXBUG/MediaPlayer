@@ -29,7 +29,43 @@ namespace VIPMP3.ViewModel
         }
         #endregion
         #region Propertise
+        #region SelectedMusic
 
+        private Music _SelectedItem;
+        public Music SelectedItem
+        {
+            get => _SelectedItem;
+            set
+            {
+                _SelectedItem = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+        #region DeleteFileCommand
+        private ICommand _DelFileMP3Command;
+
+        public ICommand DelFileMP3Command
+        {
+            get
+            {
+                return _DelFileMP3Command ??
+                     (_DelFileMP3Command = new RelayCommand<object>(
+                         (p) => CanExecuteDelFileCommand(),
+                            (p) => ExecuteDelFileCommand()));
+            }
+        }
+
+        private bool CanExecuteDelFileCommand()
+        {
+            return (SelectedItem != null);
+        }
+
+        private void ExecuteDelFileCommand()
+        {
+            Musics.Remove(SelectedItem);
+        }
+        #endregion
         public event EventHandler RefreshPlayListList;
 
         #region NamePlaylist

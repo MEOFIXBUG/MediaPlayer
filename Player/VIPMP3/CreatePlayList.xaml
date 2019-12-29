@@ -126,14 +126,23 @@
                     </materialDesign:PackIcon.Foreground>
                 </materialDesign:PackIcon>
             </Button>
-            <TextBlock Text="Add Songs" Height="25" VerticalAlignment="Bottom" Margin="76,0,662,-20" />
+           
+            <Button Style="{DynamicResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Left" Width="40" Height="Auto" Margin="200,69,0,-20" 
+                    Command="{Binding DelFileMP3Command}" RenderTransformOrigin="0.7,-5.123">
+                <materialDesign:PackIcon Kind="Minus" VerticalAlignment="Center" Width="20" Height="20">
+                    <materialDesign:PackIcon.Foreground>
+                        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                            <GradientStop Color="#FFD69016"/>
+                            <GradientStop Color="#FFD6511E" Offset="0.747"/>
+                            <GradientStop Color="#FF9B330D" Offset="0.807"/>
+                        </LinearGradientBrush>
+                    </materialDesign:PackIcon.Foreground>
+                </materialDesign:PackIcon>
+            </Button>
         </Grid>
         <Grid Grid.Row="2" Margin="1,10,1,30"  >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <ListView Name="musicsListView"  Margin="15,25,15,15" Foreground="LightSteelBlue" ItemsSource="{Binding Musics ,Mode=TwoWay}" Background="#44444444" >
+           
+            <ListView Name="musicsListView"  Margin="15,25,15,15" Foreground="LightSteelBlue" ItemsSource="{Binding Musics ,Mode=TwoWay}" SelectedItem="{Binding SelectedItem}" Background="#44444444" >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding SelectedMusicChangedCommand}" CommandParameter="{Binding ElementName=musicsListView,Path=SelectedIndex}"/>

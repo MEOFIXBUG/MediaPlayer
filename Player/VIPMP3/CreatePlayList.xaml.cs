@@ -24,11 +24,19 @@ namespace VIPMP3
         public CreatePlayList(PlayList playList)
         {
             InitializeComponent();
+            
             if (playList != null)
             {
                 PlayListName.Text = playList.Name;
                 PlayListName.IsEnabled = false;
+               
                 musicsListView.ItemsSource= new ObservableCollection<Music>(playList.musicList);
+            }
+            else
+            {
+                PlayListName.Text = "";
+
+                musicsListView.ItemsSource = new ObservableCollection<Music>();
             }
            
         }
